@@ -1,0 +1,176 @@
+{
+  "best_heuristic_over_asap": {
+    "median": 0.3677796169552395,
+    "n": 224,
+    "q1": 0.016732907442204813,
+    "q3": 0.9309472522436885
+  },
+  "compute": {
+    "backend": "ssh",
+    "estimated_run_cost_usd": 0.9281861333333332,
+    "instance": "Vast.ai RTX 3090 standalone instance (CPU used)",
+    "listed_price_usd_per_hour": 0.12,
+    "measured_wall_seconds": 27845.584
+  },
+  "matched_atacseq_bacass_local_search": {
+    "pressR": {
+      "mean_ratio": 0.9323593570422681,
+      "median_ratio": 0.9912694002426845,
+      "n": 96
+    },
+    "pressWR": {
+      "mean_ratio": 0.922693911764687,
+      "median_ratio": 0.9894211603451175,
+      "n": 96
+    },
+    "slackR": {
+      "mean_ratio": 0.8791468401654389,
+      "median_ratio": 0.9779590655268278,
+      "n": 96
+    },
+    "slackWR": {
+      "mean_ratio": 0.9223313552683535,
+      "median_ratio": 0.9803971314624151,
+      "n": 96
+    }
+  },
+  "observed": {
+    "deadline_sensitivity_pressWR_LS": {
+      "1.0": 0.821634,
+      "1.5": 0.45714,
+      "2.0": 0.402483,
+      "3.0": 0.156061
+    },
+    "headline": {
+      "baseline_worst_fraction": 0.959821,
+      "median_heuristic_over_asap": {
+        "press-LS": 0.493888,
+        "pressR-LS": 0.455518,
+        "pressW-LS": 0.517815,
+        "pressWR-LS": 0.502893,
+        "slack-LS": 0.526404,
+        "slackR-LS": 0.481451,
+        "slackW-LS": 0.590111,
+        "slackWR-LS": 0.526037
+      },
+      "paper_all_variants_approx": 0.6,
+      "paper_baseline_worst_fraction": 0.8401,
+      "paper_pressWR_LS": 0.58,
+      "paper_pressWR_best_fraction": 0.3447,
+      "pressWR_best_fraction": 0.397321,
+      "undefined_ratio_counts_baseline_zero": {}
+    },
+    "local_search": {
+      "press": {
+        "mean_ratio": 0.870777,
+        "median_ratio": 0.969684,
+        "n": 224
+      },
+      "pressR": {
+        "mean_ratio": 0.913847,
+        "median_ratio": 0.977701,
+        "n": 224
+      },
+      "pressW": {
+        "mean_ratio": 0.877356,
+        "median_ratio": 0.967141,
+        "n": 224
+      },
+      "pressWR": {
+        "mean_ratio": 0.911119,
+        "median_ratio": 0.980426,
+        "n": 224
+      },
+      "slack": {
+        "mean_ratio": 0.892108,
+        "median_ratio": 0.972577,
+        "n": 224
+      },
+      "slackR": {
+        "mean_ratio": 0.908076,
+        "median_ratio": 0.97677,
+        "n": 224
+      },
+      "slackW": {
+        "mean_ratio": 0.907247,
+        "median_ratio": 0.96874,
+        "n": 224
+      },
+      "slackWR": {
+        "mean_ratio": 0.918323,
+        "median_ratio": 0.97715,
+        "n": 224
+      }
+    },
+    "paper": "arXiv:2507.08725v2",
+    "runtime_profile": {
+      "atacseq10000": {
+        "max_algorithm_time_ms": 192290.0,
+        "median_algorithm_time_ms": 142263.5
+      },
+      "atacseq30000": {
+        "max_algorithm_time_ms": 2136540.0,
+        "median_algorithm_time_ms": 1582205.0
+      },
+      "atacseq4000": {
+        "max_algorithm_time_ms": 51887.0,
+        "median_algorithm_time_ms": 22185.0
+      }
+    },
+    "setup": {
+      "cmake": "cmake version 3.28.3",
+      "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+      "gurobi_available": false,
+      "parallel_workers": 8,
+      "platform": "Linux-6.8.0-87-generic-x86_64-with-glibc2.39",
+      "primary_instances": 224,
+      "primary_workflow_scales": [
+        "atacseq200",
+        "atacseq1000",
+        "eager200",
+        "eager1000",
+        "methylseq200",
+        "methylseq1000",
+        "bacass"
+      ],
+      "python": "3.12.3",
+      "runtime_profile_instances": 6,
+      "wall_seconds": 27845.584
+    },
+    "validity": {
+      "invalid_rows": 0,
+      "rows": 3910
+    }
+  },
+  "paper_claims": {
+    "baseline_worst_fraction": 0.8401,
+    "local_search_mean_ratio": {
+      "pressR": 0.25,
+      "pressWR": 0.23,
+      "slackR": 0.25,
+      "slackWR": 0.25
+    },
+    "median_heuristic_over_asap_approx": 0.6,
+    "pressWR_LS_over_asap": 0.58,
+    "pressWR_best_fraction": 0.3447
+  },
+  "pressWR_scenario_deadline_medians": {
+    "S1|1.5x": 1.0,
+    "S1|1x": 1.0,
+    "S1|2x": 1.0,
+    "S1|3x": 1.0,
+    "S2|1.5x": 0.2851320849748764,
+    "S2|1x": 0.5042115350375551,
+    "S2|2x": 0.31716181725370085,
+    "S2|3x": 0.0830819011811382,
+    "S3|1.5x": 0.7160859062624467,
+    "S3|1x": 0.9520024282950744,
+    "S3|2x": 0.6711155765843893,
+    "S3|3x": 0.37495891547578086,
+    "S4|1.5x": 0.318713710384187,
+    "S4|1x": 0.7656592032591392,
+    "S4|2x": 0.10888752012659918,
+    "S4|3x": 0.030908055259563676
+  },
+  "run_id": "6a2bd1b2-b1a5-4cb9-a58b-992de3c7f5a2"
+}

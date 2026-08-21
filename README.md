@@ -1,3 +1,25 @@
+# Reproducing CaWoSched's headline carbon-savings claim
+
+![Observed heuristic carbon cost relative to ASAP](reports/cawosched-reproduction/images/headline-result.png)
+
+We tested the central empirical claim of [Carbon-Aware Workflow Scheduling with Fixed Mapping and Deadline Constraint](https://arxiv.org/abs/2507.08725): the paper's heuristics should reduce carbon cost relative to an ASAP schedule. Using the authors' C++ implementation on 224 stratified repository instances, `pressWR-LS` reached a median carbon-cost ratio of **0.503**, versus **0.58** in the paper. All eight tested heuristic medians fell between 0.456 and 0.590. The headline claim is therefore **aligned on this downscaled setup**.
+
+This substitutes 224 workflow/profile combinations for the paper's 1,088 simulations per algorithm and omits the Gurobi-dependent ILP comparison. The formal run used the CPU of a standalone Vast.ai RTX 3090 instance connected through the `cawosched-3090` SSH target; the scheduler did not use the GPU. It completed in 7 h 47 min for an estimated \$0.93 at the instance's listed \$0.12/hour rate. Local search produced a much smaller improvement than the paper reports, so that claim remains **inconclusive under this setup**.
+
+[Read the illustrated claim-by-claim report](reports/cawosched-reproduction/report.md) · [Explore the self-contained marimo tutorial](notebooks/cawosched_reproduction.py)
+
+Because this repository is private, the notebook intentionally has no Molab badge. Run it locally with `marimo edit notebooks/cawosched_reproduction.py` or `marimo run notebooks/cawosched_reproduction.py`; its formal results are embedded and do not require rerunning the expensive experiment.
+
+## Experiment log
+
+| Branch / experiment | Purpose or change | Exact run command | Assessment / outcome | Compute |
+|---|---|---|---|---|
+| `main` | Public-facing README, report, figures, and tutorial | Not run as an experiment (publication surface) | Publication surface only | None |
+| [`orx/official-cawosched-headline-reproduction`](https://github.com/S-Discipline/carbon-aware-workflow-scheduling-with-fixed-mapp/tree/orx/official-cawosched-headline-reproduction) | Official code plus deterministic stratified evaluation | `bash reproduction/run.sh` | Done: headline aligned; 3,910/3,910 rows valid | Vast.ai standalone RTX 3090 instance, CPU used; 7 h 47 min; ≈\$0.93 |
+| [`orx/published-reproduction-report`](https://github.com/S-Discipline/carbon-aware-workflow-scheduling-with-fixed-mapp/tree/orx/published-reproduction-report) | Reader-facing analysis generated from the formal run | `bash reproduction/run.sh` | Not run as an experiment (presentation-only child) | None |
+
+---
+
 # CaWoSched
 
 **CaWoSched: Carbon-aware Workflow Scheduling with Fixed Mapping and Deadline Constraint**
@@ -209,8 +231,6 @@ CaWoSched implements multiple variants of the heuristic framework:
 ## License
 
 License: [MIT](LISENCE)
-
-
 
 
 
