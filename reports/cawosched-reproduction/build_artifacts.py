@@ -65,6 +65,14 @@ def prepare(rows: list[dict[str, str]], summary: dict, run_id: str) -> dict:
     with_ls = [row for row in primary if row["mode"] == "with_ls"]
     without_ls = {(row["instance"], row["variant"]): row for row in primary if row["mode"] == "without_ls"}
 
+    deadline_slackw = defaultdict(list)
+    for observed in with_ls:
+        if observed["variant"] != "slackW-LS":
+            continue
+        value = ratio(observed["cost"], baseline[observed["instance"]]["cost"])
+        if value is not None:
+            deadline_slackw[observed["deadline_factor"]].append(value)
+
     local_search_matched = {}
     for variant in ("slackR", "slackWR", "pressR", "pressWR"):
         values = []
@@ -110,10 +118,15 @@ def prepare(rows: list[dict[str, str]], summary: dict, run_id: str) -> dict:
             "pressWR_LS_over_asap": 0.58,
             "baseline_worst_fraction": 0.8401,
             "pressWR_best_fraction": 0.3447,
+            "slackW_LS_3x_over_asap": 0.15,
             "local_search_mean_ratio": {"slackR": 0.25, "slackWR": 0.25, "pressR": 0.25, "pressWR": 0.23},
         },
         "observed": summary,
         "matched_atacseq_bacass_local_search": local_search_matched,
+        "matched_deadline_slackW_LS": {
+            f"{factor:g}x": statistics.median(values)
+            for factor, values in sorted(deadline_slackw.items())
+        },
         "pressWR_scenario_deadline_medians": heatmap,
         "best_heuristic_over_asap": {
             "median": statistics.median(best_ratios),
@@ -127,6 +140,31 @@ def prepare(rows: list[dict[str, str]], summary: dict, run_id: str) -> dict:
             "listed_price_usd_per_hour": 0.12,
             "measured_wall_seconds": summary["setup"]["wall_seconds"],
             "estimated_run_cost_usd": summary["setup"]["wall_seconds"] / 3600 * 0.12,
+        },
+        "data_quality": {
+            "expected_rows": 224 * 17 + 6 * 17,
+            "observed_rows": len(rows),
+            "unique_result_keys": len(
+                {(row["cohort"], row["instance"], row["mode"], row["variant"]) for row in rows}
+            ),
+            "invalid_rows": sum(not row["valid"] for row in rows),
+            "primary_instances": len(baseline),
+            "primary_zero_cost_baselines": sum(row["cost"] == 0 for row in baseline.values()),
+        },
+        "standard_assessment": {
+            "grade": "C",
+            "conclusion": "partial reproduction success",
+            "confidence": "medium",
+            "relative_difference": {
+                "pressWR_LS_headline": abs(summary["headline"]["median_heuristic_over_asap"]["pressWR-LS"] - 0.58) / 0.58,
+                "baseline_worst_fraction": abs(summary["headline"]["baseline_worst_fraction"] - 0.8401) / 0.8401,
+                "pressWR_best_fraction": abs(summary["headline"]["pressWR_best_fraction"] - 0.3447) / 0.3447,
+                "slackW_LS_3x": abs(statistics.median(deadline_slackw[3.0]) - 0.15) / 0.15,
+                "local_search": {
+                    variant: abs(local_search_matched[variant]["mean_ratio"] - paper) / paper
+                    for variant, paper in {"slackR": 0.25, "slackWR": 0.25, "pressR": 0.25, "pressWR": 0.23}.items()
+                },
+            },
         },
     }
     return enriched
@@ -168,23 +206,31 @@ def headline(summary: dict, path: Path) -> None:
         ncol=2,
         fontsize=9,
     )
-    style_axes(ax, "Heuristic carbon cost relative to ASAP", "224 stratified instances; paper headline reference shown as dashed line")
+    style_axes(
+        ax,
+        "Direction matches, but the exact headline differs by 13.3%",
+        "224 stratified instances; pressWR-LS observed 0.503 vs paper 0.580",
+    )
     save(fig, path)
 
 
-def deadline(summary: dict, path: Path) -> None:
-    values = summary["deadline_sensitivity_pressWR_LS"]
+def deadline(enriched: dict, path: Path) -> None:
+    values = enriched["matched_deadline_slackW_LS"]
     labels = ["1×", "1.5×", "2×", "3×"]
-    y = [values[key] for key in ("1.0", "1.5", "2.0", "3.0")]
+    y = [values[key] for key in ("1x", "1.5x", "2x", "3x")]
     fig, ax = plt.subplots(figsize=(8.8, 4.8))
     bars = ax.bar(labels, y, color=[BLUE, BLUE, BLUE, GOLD], edgecolor=BLUE_DARK, linewidth=0.6, width=0.62)
     for bar, value in zip(bars, y):
         ax.text(bar.get_x() + bar.get_width() / 2, value + 0.025, f"{value:.3f}", ha="center", color=INK, fontsize=10)
     ax.set_ylim(0, 1.0)
-    ax.set_ylabel("Median pressWR-LS cost ÷ ASAP cost", color=GREY)
+    ax.set_ylabel("Median slackW-LS cost ÷ ASAP cost", color=GREY)
     ax.yaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
-    style_axes(ax, "Deadline flexibility and carbon cost", "Same 224-instance cohort; lower ratios indicate larger carbon savings")
+    style_axes(
+        ax,
+        "Deadline trend matches the paper",
+        "Exact 3× comparison: observed slackW-LS 0.148 vs paper 0.150",
+    )
     save(fig, path)
 
 
@@ -242,7 +288,11 @@ def robustness(enriched: dict, path: Path) -> None:
     ax.set_ylabel("Green-power scenario", color=GREY)
     colorbar = fig.colorbar(image, ax=ax, shrink=0.78)
     colorbar.set_label("Median pressWR-LS ÷ ASAP", color=GREY)
-    style_axes(ax, "Robustness across energy profiles and deadlines", "224-instance cohort; lower values indicate larger carbon savings")
+    style_axes(
+        ax,
+        "Energy-profile behavior is not robustly reproduced",
+        "224-instance diagnostic; upstream large-cluster filenames are asymmetric",
+    )
     save(fig, path)
 
 
@@ -264,7 +314,7 @@ def main() -> None:
     (args.output / "summary.json").write_text(json.dumps(enriched, indent=2, sort_keys=True) + "\n")
 
     headline(summary, images / "headline-result.png")
-    deadline(summary, images / "deadline-sensitivity.png")
+    deadline(enriched, images / "deadline-sensitivity.png")
     local_search(enriched, images / "local-search-gap.png")
     runtime(summary, images / "runtime-scaling.png")
     robustness(enriched, images / "robustness-heatmap.png")

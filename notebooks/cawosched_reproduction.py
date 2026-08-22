@@ -14,13 +14,16 @@ def _():
 @app.cell
 def _(mo):
     mo.md(r"""
-    # CaWoSched reproduction: can workflow timing cut carbon?
+    # CaWoSched reproduction audit: Grade C
 
     ![Headline reproduction result](https://raw.githubusercontent.com/S-Discipline/carbon-aware-workflow-scheduling-with-fixed-mapp/main/reports/cawosched-reproduction/images/headline-result.png)
 
     **Observed evidence first:** on 224 official, stratified instances, every tested
     heuristic had a median carbon cost below ASAP. The paper reports **0.58** for
-    `pressWR-LS`; this reproduction observed **0.503** (lower is better).
+    `pressWR-LS`; this reproduction observed **0.503** (lower is better), a **13.3%
+    relative difference** that exceeds the temporary 10% closeness criterion.
+
+    **Unified verdict: C — partial reproduction success, medium confidence.**
 
     This notebook is a self-contained tutorial over the already-produced evidence.
     It does not rerun the seven-hour formal experiment.
@@ -119,7 +122,7 @@ def _(mo):
 
 @app.cell
 def _():
-    deadline_ratios = {"1×": 0.821634, "1.5×": 0.457140, "2×": 0.402483, "3×": 0.156061}
+    deadline_ratios = {"1×": 0.832648, "1.5×": 0.580695, "2×": 0.383632, "3×": 0.147914}
     local_search_ratios = {
         "slackR": 0.879147,
         "slackWR": 0.922331,
@@ -139,9 +142,9 @@ def _(deadline_ratios, local_search_ratios, mo, runtime_minutes):
         f"""
         ## Checks and evidence
 
-        **Deadline mechanism.** `pressWR-LS` relative costs were {deadline_text}. More
-        time lets the scheduler move work into cleaner intervals, matching the paper's
-        direction and endpoint magnitude.
+        **Deadline mechanism.** `slackW-LS` relative costs were {deadline_text}. More
+        time lets the scheduler move work into cleaner intervals; the 3× result differs
+        from the paper's 0.150 by only 1.4%.
 
         **Rank checks.** ASAP was tied for worst on 95.98% of cases (paper: 84.01%),
         while `pressWR-LS` was tied for best on 39.73% (paper: 34.47%).
@@ -162,10 +165,13 @@ def _(mo):
     mo.md(r"""
     ## Assessment and next steps
 
-    The central claim is **aligned on this downscaled setup**: CaWoSched schedules
-    generally incurred about half ASAP's median carbon cost, and flexibility helped.
-    The local-search effect is **inconclusive under this setup**, while runtime is
-    **partially aligned** because only its scaling trend agrees.
+        The evidence is not sufficient for a full or successful downscaled reproduction.
+        The overall ASAP comparison agrees in direction but misses the 10% numerical
+        threshold; the exact deadline endpoint agrees; local-search magnitude differs by
+        252%–301%; parameter robustness is mixed; and the ILP claim was not attempted.
+
+        **Final grade: C. Final conclusion: partial reproduction success. Confidence:
+        medium.**
 
     A full reproduction still needs the exact 1,088-instance-per-algorithm manifest,
     isolated CPU timing, and a licensed Gurobi run for the small-instance ILP claim.

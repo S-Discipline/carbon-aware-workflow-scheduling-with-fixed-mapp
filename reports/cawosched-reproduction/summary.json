@@ -12,6 +12,14 @@
     "listed_price_usd_per_hour": 0.12,
     "measured_wall_seconds": 27845.584
   },
+  "data_quality": {
+    "expected_rows": 3910,
+    "invalid_rows": 0,
+    "observed_rows": 3910,
+    "primary_instances": 224,
+    "primary_zero_cost_baselines": 41,
+    "unique_result_keys": 3910
+  },
   "matched_atacseq_bacass_local_search": {
     "pressR": {
       "mean_ratio": 0.9323593570422681,
@@ -33,6 +41,12 @@
       "median_ratio": 0.9803971314624151,
       "n": 96
     }
+  },
+  "matched_deadline_slackW_LS": {
+    "1.5x": 0.580695177125484,
+    "1x": 0.8326482043548444,
+    "2x": 0.38363208563029166,
+    "3x": 0.14791374280628422
   },
   "observed": {
     "deadline_sensitivity_pressWR_LS": {
@@ -152,7 +166,8 @@
     },
     "median_heuristic_over_asap_approx": 0.6,
     "pressWR_LS_over_asap": 0.58,
-    "pressWR_best_fraction": 0.3447
+    "pressWR_best_fraction": 0.3447,
+    "slackW_LS_3x_over_asap": 0.15
   },
   "pressWR_scenario_deadline_medians": {
     "S1|1.5x": 1.0,
@@ -172,5 +187,22 @@
     "S4|2x": 0.10888752012659918,
     "S4|3x": 0.030908055259563676
   },
-  "run_id": "6a2bd1b2-b1a5-4cb9-a58b-992de3c7f5a2"
+  "run_id": "6a2bd1b2-b1a5-4cb9-a58b-992de3c7f5a2",
+  "standard_assessment": {
+    "conclusion": "partial reproduction success",
+    "confidence": "medium",
+    "grade": "C",
+    "relative_difference": {
+      "baseline_worst_fraction": 0.14250803475776702,
+      "local_search": {
+        "pressR": 2.7294374281690725,
+        "pressWR": 3.011712659846465,
+        "slackR": 2.5165873606617555,
+        "slackWR": 2.689325421073414
+      },
+      "pressWR_LS_headline": 0.13294310344827576,
+      "pressWR_best_fraction": 0.15265738323179567,
+      "slackW_LS_3x": 0.013908381291438492
+    }
+  }
 }
